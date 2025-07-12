@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="results-section">
+        <h2>Body Measurements</h2>
+        
+        <div class="image-comparison">
+            <div class="image-container">
+                <h3>Original Image</h3>
+                <img src="{{ url_for('static', filename='uploads/' + original_image) }}" alt="Original Image">
+            </div>
+            <div class="image-container">
+                <h3>Annotated Image</h3>
+                <img src="{{ url_for('static', filename='uploads/' + annotated_image) }}" alt="Annotated Image">
+            </div>
+        </div>
+        
+        <div class="measurements">
+            <h3>Body Measurements (in inches)</h3>
+            
+            {% for category, measurement_keys in categories.items() %}
+                <div class="measurement-category">
+                    <h4>{{ category }}</h4>
+                    <ul>
+                        {% for key in measurement_keys %}
+                            <li>{{ key }}: <strong>{{ "%.2f"|format(measurements[key]) }}</strong></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+            
+            <div class="calibration-info">
+                <p>Height Calibration: {{ user_height }} inches</p>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <a href="{{ url_for('index') }}" class="button">Start Over</a>
+        </div>
+    </div>
+{% endblock %}

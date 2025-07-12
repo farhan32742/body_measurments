@@ -1,0 +1,22 @@
+# Ignore Python virtual environments
+.venv/
+venv/
+
+# Ignore only files inside static/uploads, not the whole static folder
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Keep style.css and other static files
+!static/uploads/style.css
+
+# Ignore environment variable files
+.env
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Optional: Ignore logs and temp files
+*.log
+.DS_Store
+.ipynb_checkpoints/

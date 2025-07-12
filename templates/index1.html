@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Body Measurement App</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { display: flex; gap: 20px; }
+        .image-container { flex: 1; }
+        .measurements { flex: 1; }
+        img { max-width: 100%; height: auto; }
+        .measurement-group { margin-bottom: 20px; }
+        .measurement-group h3 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        .measurement-item { display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+    <h1>Body Measurement App</h1>
+    
+    <form method="POST" enctype="multipart/form-data">
+        <div>
+            <label for="image">Upload Body Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+        </div>
+        <div>
+            <label for="height">Your Height (inches):</label>
+            <input type="number" id="height" name="height" step="0.1" min="24" max="96" required>
+        </div>
+        <button type="submit">Calculate Measurements</button>
+    </form>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flashes">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    {% if image_data %}
+    <div class="container">
+        <div class="image-container">
+            <h2>Annotated Image</h2>
+            <img src="data:image/jpeg;base64,{{ image_data }}" alt="Annotated Body Image">
+        </div>
+        
+        <div class="measurements">
+            <h2>Body Measurements</h2>
+            {% if user_height %}
+                <p>Height: {{ user_height }} inches</p>
+            {% endif %}
+            
+            {% if measurements %}
+                <div class="measurement-group">
+                    <h3>Upper Body</h3>
+                    <div class="measurement-item"><span>Shoulder Width:</span> <span>{{ measurements.get('Shoulder Width', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Chest Width:</span> <span>{{ measurements.get('Chest Width', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Chest Circumference:</span> <span>{{ measurements.get('Estimated Chest Circumference', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Waist Width:</span> <span>{{ measurements.get('Waist Width', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Waist Circumference:</span> <span>{{ measurements.get('Estimated Waist Circumference', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Torso Length:</span> <span>{{ measurements.get('Torso Length', 0)|round(2) }}"</span></div>
+                </div>
+                
+                <div class="measurement-group">
+                    <h3>Arms</h3>
+                    <div class="measurement-item"><span>Left Upper Arm:</span> <span>{{ measurements.get('Left Upper Arm Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Left Lower Arm:</span> <span>{{ measurements.get('Left Lower Arm Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Left Total Arm:</span> <span>{{ measurements.get('Left Total Arm Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Right Upper Arm:</span> <span>{{ measurements.get('Right Upper Arm Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Right Lower Arm:</span> <span>{{ measurements.get('Right Lower Arm Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Right Total Arm:</span> <span>{{ measurements.get('Right Total Arm Length', 0)|round(2) }}"</span></div>
+                </div>
+                
+                <div class="measurement-group">
+                    <h3>Legs</h3>
+                    <div class="measurement-item"><span>Left Upper Leg:</span> <span>{{ measurements.get('Left Upper Leg Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Left Lower Leg:</span> <span>{{ measurements.get('Left Lower Leg Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Left Total Leg:</span> <span>{{ measurements.get('Left Total Leg Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Right Upper Leg:</span> <span>{{ measurements.get('Right Upper Leg Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Right Lower Leg:</span> <span>{{ measurements.get('Right Lower Leg Length', 0)|round(2) }}"</span></div>
+                    <div class="measurement-item"><span>Right Total Leg:</span> <span>{{ measurements.get('Right Total Leg Length', 0)|round(2) }}"</span></div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</body>
+</html>
