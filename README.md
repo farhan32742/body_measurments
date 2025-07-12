@@ -24,9 +24,9 @@ These instructions will help you set up the project on your local machine for de
 Open your terminal or command prompt and run:
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-### Than oprn your folder
-### sstep 2:
+git https://github.com/farhan32742/body_measurments.git
+### Than open your folder
+
 python -m venv venv
 
 venv\Scripts\activate
