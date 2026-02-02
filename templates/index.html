@@ -8,19 +8,38 @@
 <body class="bg-light">
 <div class="container mt-5">
   <h2 class="text-center mb-4">Body Measurement Using Image</h2>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="mb-3">
+        {% for msg in messages %}
+          <div class="alert alert-info">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <form method="POST" enctype="multipart/form-data" class="mb-4">
     <div class="row mb-3">
-      <div class="col">
-        <input type="number" name="height" class="form-control" placeholder="Enter your height in inches" required>
+      <div class="col-3">
+        <input type="number" name="feet" class="form-control" placeholder="Feet (e.g., 5)" min="0" step="1" required value="{{ user_height_feet or '' }}">
       </div>
-      <div class="col">
+      <div class="col-3">
+        <input type="number" name="inches" class="form-control" placeholder="Inches (e.g., 7.5)" min="0" step="0.1" value="{{ user_height_inches or '' }}">
+        <small class="text-muted">If unknown, enter 0</small>
+      </div>
+      <div class="col-3">
         <input type="file" name="image" class="form-control" accept=".jpg,.jpeg,.png" required>
       </div>
-      <div class="col">
+      <div class="col-3">
         <button type="submit" class="btn btn-primary w-100">Measure Body</button>
       </div>
     </div>
   </form>
+
+  {% if user_height %}
+    <p class="text-center"><strong>Provided Height:</strong> {{ user_height_feet }} ft {{ user_height_inches }} in ({{ user_height }} in)</p>
+  {% endif %}
 
   {% if image_data %}
     <div class="text-center mb-4">

@@ -259,7 +259,31 @@ def index():
             return redirect(request.url)
             
         file = request.files['image']
-        height_inches = float(request.form.get('height', 0))
+        # Support feet + inches inputs while preserving backward compatibility with legacy 'height' (inches) field
+        feet_str = request.form.get('feet', '').strip()
+        inches_str = request.form.get('inches', '').strip()
+        try:
+            if feet_str != '' or inches_str != '':
+                feet = float(feet_str) if feet_str != '' else 0.0
+                inches = float(inches_str) if inches_str != '' else 0.0
+                # Convert any extra inches into feet
+                extra_feet = math.floor(inches / 12.0)
+                if extra_feet:
+                    feet += extra_feet
+                    inches = inches - extra_feet * 12.0
+                total_inches = feet * 12.0 + inches
+            else:
+                # Legacy single-field input (inches)
+                total_inches = float(request.form.get('height', 0))
+                feet = math.floor(total_inches / 12.0)
+                inches = total_inches - feet * 12.0
+        except ValueError:
+            flash('Please enter numeric values for feet and inches')
+            return redirect(request.url)
+        
+        if total_inches <= 0:
+            flash('Please enter a valid height (feet and inches)')
+            return redirect(request.url)
         
         if file.filename == '':
             flash('No selected file')
@@ -269,18 +293,17 @@ def index():
             flash('Invalid file type. Please upload a JPG, JPEG, or PNG file.')
             return redirect(request.url)
             
-        if height_inches <= 0:
-            flash('Please enter a valid height in inches')
-            return redirect(request.url)
-            
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             
-            # Store original image path in session
+            # Store original image path and provided height in session
             session['original_image'] = filepath
-            session['user_height'] = height_inches
+            session['user_height'] = total_inches
+            # store split feet and inches (nice for pre-filling the form and display)
+            session['user_feet'] = int(feet)
+            session['user_inches'] = round(inches, 2)
             
             # Process image
             image = cv2.imread(filepath)
@@ -313,7 +336,7 @@ def index():
                     results.pose_landmarks.landmark, 
                     width_px, 
                     height_px, 
-                    height_inches, 
+                    total_inches, 
                     pixel_height
                 )
                 
@@ -331,7 +354,9 @@ def index():
     return render_template('index.html', 
                          image_data=image_data, 
                          measurements=measurements,
-                         user_height=session.get('user_height'))
+                         user_height=session.get('user_height'),
+                         user_height_feet=session.get('user_feet'),
+                         user_height_inches=session.get('user_inches'))
 
 if __name__ == '__main__':
     app.run(debug=True)
